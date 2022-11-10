@@ -1,0 +1,146 @@
+openapi: 3.0.3
+info:
+  version: 0.0.1
+  title: Blogging API
+  description: Retrieve and manage your blogs and posts.
+servers:
+  - url: "/api/ref-app"
+tags:
+  - name: blog
+  - name: post
+paths:
+  /blogs:
+    get:
+      tags:
+        - blog
+      summary: Get a list of all blogs.
+      description: Get blogs withing the system.
+      operationId: blogs_getBlogs
+      responses:
+        200:
+          $ref: '#/components/responses/GetBlogsResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: Blogs error
+  /blogs/{id}:
+    get:
+      tags:
+        - blog
+      summary: Get a single blog.
+      description: Get a single blog using its unique id.
+      operationId: blogs_getBlog
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique id of this blog used within the blogs system.
+          schema:
+            type: string
+            format: uuid
+            example: "908fe6eb-6ab4-4783-99f8-85853fa7c21e"
+      responses:
+        200:
+          $ref: '#/components/responses/GetBlogResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: Blog does not exist
+
+components:
+  responses:
+    GetBlogsResponse:
+      description: The response to a request to get all blogs.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BlogsGetResponse'       
+    GetBlogResponse:
+      description: The response to a request to get a blog.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BlogGetResponse'    
+  schemas:
+    User:    
+      title: User
+      type: object
+      description: A user in the blogs system
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 'c1e63407-ea2b-4e80-90c5-61ceb0b18768'
+        firstName:
+          type: string
+          example: 'Tom'
+        lastName:
+          type: string
+          example: 'Shirley'          
+        username:
+          type: string
+          example: 'tshirley'
+    Post:    
+      title: Post
+      type: object
+      description: The blog object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 'c1e63407-ea2b-4e80-90c5-61ceb0b18768'
+        title:
+          type: string
+          example: 'This is a new post!'
+        blogId:
+          type: string
+          format: uuid
+          example: 'c1e63407-ea2b-4e80-90c5-61ceb0b18768'
+    Blog:    
+      title: Blog
+      type: object
+      description: The blog object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 'c1e63407-ea2b-4e80-90c5-61ceb0b18768'
+        url:
+          type: string
+          example: 'https://some-blog-url'
+        owner:
+            type: object
+            $ref: '#/components/schemas/User'
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Post'
+    BlogGetResponse:
+      title: BlogGetResponse
+      type: object
+      description: The object used to represent a blog in a response.
+      $ref: '#/components/schemas/Blog'
+    BlogsGetResponse:
+      title: BlogsGetResponse
+      type: object
+      description: The object used to represent a blog in a response.
+      properties:        
+        blogs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Blog'          
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: An error ocurred. The error information is
+
